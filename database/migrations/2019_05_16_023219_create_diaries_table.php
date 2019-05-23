@@ -19,6 +19,7 @@ class CreateDiariesTable extends Migration
             $table->string('title', 30); //追加
             $table->text('body'); //追加
             $table->timestamps();
+            //ここは絶対に変えてはいけない。。
         });
     }
 
