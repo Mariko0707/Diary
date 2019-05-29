@@ -27,7 +27,8 @@ class CreateDiary extends FormRequest
             //ここがdiaryでいうと記入部分！必ず文字を書くようにという記入！
             //|max:30 とは30文字以内でタイトルをつけなさいっていうこと
             'title' => 'required|max:30',
-            'body' => 'required',       
+            'body' => 'required',
+            
         ];
     }
 }
