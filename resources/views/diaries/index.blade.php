@@ -6,11 +6,20 @@ Diary 一覧
 @endsection
 
 @section('content')
+
+	{{-- 画像の表示の仕方 --}}
+	{{-- <img src="/img/FullSizeRender.jpg" alt=""> --}}
+	<img src="{{ asset('img/IMG_1637.jpeg')}}" alt="">
+	<br>
+
 	<a href="{{ route('diary.create') }}" class="btn btn-outline-primary">新規投稿</a>
 	@foreach($diaries as $diary)
 	<div class="m-4 p-4 border border-primary">	
 		<p>{{ $diary['title'] }}</p>
 		<p>{{ $diary['body'] }}</p>
+		@if($diary->img_url)
+			<img src="/{{ str_replace('public/', 'storage/', $diary->img_url) }}" alt="">
+		@endif
 		<p>{{ $diary['created_at'] }}</p>
 
 		@if(Auth::check() && Auth::user()->id == $diary['user_id'])
@@ -25,15 +34,30 @@ Diary 一覧
 			</form>
 		@endif
 		{{-- いいね機能周りの表示 --}}
-			<div class="mt-3 ml-3">
-				<form action="{{ route('diary.like', ['id' => $diary['id']]) }}" method="POST">
+
+
+		@if(Auth::check() && $diary->likes->contains(function ($user){
+			return $user->id == Auth::user()->id;
+		}))
+		{{-- いいねされていたら、いいねを取り消すボタンを設置 --}}
+		<form  style="display: inline;" action="{{ route('diary.dislike', ['id' => $diary['id']]) }}" method="POST">
+					@csrf
+					<button type="submit" class="btn btn-outline-danger">
+						<i class="far fa-thumbs-up"></i>
+						<span>{{ $diary->likes->count() }}</span>
+					</button>
+				</form>
+
+		@else
+		{{-- いいねされていなければいいねを取り消すボタンを設置 --}}
+				<form  style="display: inline;" action="{{ route('diary.like', ['id' => $diary['id']]) }}" method="POST">
 					@csrf
 					<button type="submit" class="btn btn-outline-primary">
 						<i class="far fa-thumbs-up"></i>
 						<span>{{ $diary->likes->count() }}</span>
 					</button>
 				</form>
-			</div>
+		@endif
 
 	</div>
 	@endforeach

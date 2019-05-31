@@ -57,7 +57,7 @@ class DiaryController extends Controller
 		// dd('ほげ');for check the site
 		//POST送信データの受け取り
 		//$_POSTの代わりにrequestクラスを使用する
-		// dd($request);
+		//dd($request->img_url);
 		//INSERT INTO テーブル名 (カラム) VALUE (値)
 		//INSERT INTO diaries (title, body) VALUE ($_POST['title'], $_POST['body'])
 		//INSERT INTO diaries (title, body) VALUE ($request->title, $request->body)
@@ -66,6 +66,11 @@ class DiaryController extends Controller
 		$diary->title = $request->title;
 		$diary->body = $request->body;
 		$diary->user_id = Auth::user()->id;
+		//storageフォルダに画像をアップする
+
+		//ランダムな文字列で画像名を設定
+		//
+		$diary->img_url = $request->img_url->store('public/diary_img');
 		$diary->save();
 
 		//一覧ページに戻る（リダイレクト処理）
@@ -146,6 +151,16 @@ class DiaryController extends Controller
 
 		return redirect()->route('diary.index');
 
+	}
+
+	//dislikeメソッドの追加
+	function dislike($id) {
+		// dd($id);
+		$diary = Diary::where('id', $id)->with('likes')->first();
+		// SELECT * FROM diaries JOIN likes
+		$diary->likes()->detach(Auth::user()->id);
+		// DELETE FROM likes WHERE diary_id=$diary->id AND user_id=Auth::user()->id
+		return redirect()->route('diary.index');
 	}
 
 }
